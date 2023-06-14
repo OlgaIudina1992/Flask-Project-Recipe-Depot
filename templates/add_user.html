@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-info" role="alert"> 
+    {{message}}
+    </div>
+{% endfor %}
+
+<center>
+    <h1>Add User: </h1>
+    <form method="POST">
+        {{form.hidden_tag()}}
+        {{form.name.label(class="form-label")}}
+        {{form.name}}
+        <br />
+        <br />
+        {{form.email.label(class="form-label")}}
+        {{form.email}}
+        <br />
+        <br />
+        {{form.favorite_dish.label(class="form-label")}}
+        {{form.favorite_dish}}
+        <br />
+        <br />
+        {{form.submit(class="btn btn-warning")}}
+    </form>
+    <br />
+    <br />
+    <h1>User List: </h1>
+    <br />
+    <table class="table table-hover">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Favorite Dish</th>
+              <th scope="col">Options</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for our_user in our_users %}
+            <tr>
+                              
+              <th scope="row">{{our_user.id}}.</th>
+              <td>{{our_user.name}}</td>
+              <td>{{our_user.email}}</td>
+              <td>{{our_user.favorite_dish}}</td>
+              <td><a href="{{url_for('update', id=our_user.id)}}">Update</a> | <a href="{{url_for('delete', id=our_user.id)}}">Delete</a></td>
+              </tr>     
+            </tr>
+            {% endfor %}
+    </table>
+    
+    <br />
+
+    <img src="{{url_for('static', filename='images/toy_project.png')}}">
+</center>
+{% endblock %}

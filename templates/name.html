@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-info" role="alert"> 
+    {{message}}
+    </div>
+{% endfor %}
+
+<center>
+<br />
+{% if name %}
+    <h1>Helloo {{name}}!</h1>
+    <h2>The temperature is <strong>{{c_to_f}}</strong> F!</h2>
+    <br />
+    <img src="{{url_for('static', filename='images/whale_watercolor.png')}}">
+{% else %}
+    <h1>Enter your name below:</h1>
+    <br />
+    <form method="POST">
+        {{form.hidden_tag()}}
+        {{form.name.label(class="form-label")}}
+        {{form.name}}
+        <br />
+        <br />
+        <h1>Celsius to Farenheit:</h1>
+        {{form.c_to_f.label(class="form-label")}}
+        {{form.c_to_f}}
+        <br />
+        <img src="{{url_for('static', filename='images/toy_project.png')}}">
+        <br />
+        {{form.submit(class="btn btn-warning")}}
+    </form>
+{% endif %}
+
+
+</center>
+{% endblock %}

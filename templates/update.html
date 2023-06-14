@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-info" role="alert"> 
+    {{message}}
+    </div>
+{% endfor %}
+
+<center>
+    <h1>Update User: </h1>
+
+    <form action="/update/{{name_updated.id}}" method="POST">
+        {{form.hidden_tag()}}
+        {{form.name.label(class="form-label")}}
+        {{form.name(value=name_updated.name)}}
+        <br />
+        <br />
+        {{form.email.label(class="form-label")}}
+        {{form.email(value=name_updated.email)}}
+        <br />
+        <br />
+        {{form.favorite_dish.label(class="form-label")}}
+        {{form.favorite_dish(value=name_updated.favorite_dish)}}
+        <br />
+        <br />
+        {{form.submit(class="btn btn-warning")}}
+    </form>
+    <br />
+    <br />
+    
+    <img src="{{url_for('static', filename='images/toy_project.png')}}">
+</center>
+{% endblock %}

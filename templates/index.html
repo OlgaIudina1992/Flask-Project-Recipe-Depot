@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+<center>
+    {% if name %}
+        <h1>Helloo {{user_name | capitalize}}</h1>
+        <br />
+        <img src="{{url_for('static', filename='images/whale_watercolor.png')}}">
+    {% else %}
+        <h1>Helloo stranger!</h1>
+        <img src="{{url_for('static', filename='images/toy_project.png')}}">
+    {%endif%}
+    <p>Welcome to my sample converter </p>
+</center>
+
+{% endblock %}

@@ -3,13 +3,17 @@ h1 {
 }
 
 h2 {
-    color: rgb(255, 34, 0);
+    color: rgb(255, 130, 67);
+}
+
+h3 {
+    color: rgb(255, 200, 21);
 }
 
 
 img {
-    max-width: 400x;
-    max-height: 200px;
+    max-width: 600px;
+    max-height: 400px;
 }
 
 p {

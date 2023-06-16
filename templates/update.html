@@ -3,33 +3,34 @@
 {%block content%}
 
 {% for message in get_flashed_messages() %}
-    <div class="alert alert-info" role="alert"> 
+<div class="alert alert-info alert-dismissible fade show" role="alert">
     {{message}}
-    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
 {% endfor %}
 
 <center>
     <h1>Update User: </h1>
-
+    <img src="{{url_for('static', filename='images/floral.png')}}">
+    <div class="col-10">
+    <div class="shadow p-3 mb-5 bg-body rounded">
     <form action="/update/{{name_updated.id}}" method="POST">
         {{form.hidden_tag()}}
         {{form.name.label(class="form-label")}}
-        {{form.name(value=name_updated.name)}}
-        <br />
-        <br />
+        {{form.name(class="form-control", value=name_updated.name)}}
+   
         {{form.email.label(class="form-label")}}
-        {{form.email(value=name_updated.email)}}
-        <br />
-        <br />
+        {{form.email(class="form-control", value=name_updated.email)}}
+      
         {{form.favorite_dish.label(class="form-label")}}
-        {{form.favorite_dish(value=name_updated.favorite_dish)}}
-        <br />
+        {{form.favorite_dish(class="form-control", value=name_updated.favorite_dish)}}
         <br />
         {{form.submit(class="btn btn-warning")}}
     </form>
-    <br />
-    <br />
+    </div>
+    </div>
+  
     
-    <img src="{{url_for('static', filename='images/toy_project.png')}}">
+    
 </center>
 {% endblock %}

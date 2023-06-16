@@ -10,36 +10,34 @@
 {% endfor %}
 
 <center>
-<br />
-{% if name %}
-    <h1>Helloo {{name}}!</h1>
-    <h2>The temperature is <strong>{{c_to_f}}</strong> F!</h2>
-    <br />
+    <h1>Update Recipe: </h1>
     <img src="{{url_for('static', filename='images/whale_watercolor.png')}}">
-{% else %}
-<div class="col-10">
+    <div class="col-10">
     <div class="shadow p-3 mb-5 bg-body rounded">
-    <h1>Enter your name below:</h1>
-
     <form method="POST">
         {{form.hidden_tag()}}
-        {{form.name.label(class="form-label")}}
-        {{form.name(class="form-control")}}
-       
-        <h1>Celsius to Farenheit:</h1>
-        {{form.c_to_f.label(class="form-label")}}
-        {{form.c_to_f(class="form-control")}}
-        <br />
-        {{form.submit(class="btn btn-warning")}}
-        <br />
-        <img src="{{url_for('static', filename='images/toy_project.png')}}">
-       
+        {{form.title.label(class="form-label")}}
+        {{form.title(class="form-control")}}
 
+        {{form.author.label(class="form-label")}}
+        {{form.author(class="form-control")}}
+      
+        {{form.ingredients.label(class="form-label")}}
+        {{form.ingredients(class="form-control")}}
+  
+        {{form.recipe.label(class="form-label")}}
+        {{form.recipe(class="form-control")}}
+               
+        {{form.slug.label(class="form-label")}}
+        {{form.slug(class="form-control")}}
+        <br />
+        
+        {{form.submit(class="btn btn-warning")}}
     </form>
     </div>
     </div>
-{% endif %}
-
-
+  
+    
+    
 </center>
 {% endblock %}

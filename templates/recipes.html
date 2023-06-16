@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+    {{message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+<center>
+<h1>Recipes</h1>
+
+<br />
+<img src="{{url_for('static', filename='images/cooking_rooster.png')}}">
+    <div class="col-10">
+    
+{% for recipe in recipes %}
+<div class="shadow p-3 mb-5 bg-body rounded">
+    <h3>{{recipe.title }}</h3> (<i>{{recipe.slug }}</i>)
+    <br />
+    <strong> {{recipe.author }} | {{recipe.date_posted }}</strong>
+    <br />
+    <br />
+    {{recipe.ingredients|truncate(50) }}<br />
+    <br />
+    {{recipe.recipe|truncate(150) }}<br />
+    <br />
+    <a href="{{url_for('recipe_page', id=recipe.id)}}" class="btn btn-warning">Read More</a>
+    <a href="{{url_for('recipe_edit', id=recipe.id)}}" class="btn btn-outline-warning">Edit</a>
+    <a href="{{url_for('recipe_delete', id=recipe.id)}}" class="btn btn-danger">Delete</a>
+
+</div>
+{% endfor %}
+    
+    </div>
+</center>
+
+{% endblock %}

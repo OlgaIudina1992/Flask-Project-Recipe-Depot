@@ -3,31 +3,40 @@
 {%block content%}
 
 {% for message in get_flashed_messages() %}
-    <div class="alert alert-info" role="alert"> 
-    {{message}}
-    </div>
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 {% endfor %}
 
 <center>
     <h1>Add User: </h1>
+    <img src="{{url_for('static', filename='images/floral.png')}}">
+    <br />
+    <div class="col-10">
+    <div class="shadow p-3 mb-5 bg-body rounded">
     <form method="POST">
         {{form.hidden_tag()}}
         {{form.name.label(class="form-label")}}
-        {{form.name}}
-        <br />
-        <br />
-        {{form.email.label(class="form-label")}}
-        {{form.email}}
-        <br />
-        <br />
+        {{form.name(class="form-control")}}
+  
         {{form.favorite_dish.label(class="form-label")}}
-        {{form.favorite_dish}}
-        <br />
+        {{form.favorite_dish(class="form-control")}}
+     
+        {{form.email.label(class="form-label")}}
+        {{form.email(class="form-control")}}
+      
+        {{form.password_hash.label(class="form-label")}}
+        {{form.password_hash(class="form-control")}}
+     
+        {{form.password_hash2.label(class="form-label")}}
+        {{form.password_hash2(class="form-control")}}
         <br />
         {{form.submit(class="btn btn-warning")}}
     </form>
-    <br />
-    <br />
+    </div>
+  </div>
+   
     <h1>User List: </h1>
     <br />
     <table class="table table-hover">
@@ -56,6 +65,6 @@
     
     <br />
 
-    <img src="{{url_for('static', filename='images/toy_project.png')}}">
+    
 </center>
 {% endblock %}

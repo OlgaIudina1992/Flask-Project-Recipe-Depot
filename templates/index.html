@@ -3,6 +3,8 @@
 {%block content%}
 
 <center>
+    <div class="col-10">
+    <div class="shadow p-3 mb-5 bg-body rounded">
     {% if name %}
         <h1>Helloo {{user_name | capitalize}}</h1>
         <br />
@@ -11,7 +13,9 @@
         <h1>Helloo stranger!</h1>
         <img src="{{url_for('static', filename='images/toy_project.png')}}">
     {%endif%}
-    <p>Welcome to my sample converter </p>
+    <p>Welcome to my recipe repo! </p>
+    </div>
+    </div>
 </center>
 
 {% endblock %}

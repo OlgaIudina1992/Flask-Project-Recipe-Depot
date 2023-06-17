@@ -15,6 +15,50 @@ app.config['SECRET_KEY'] = "my secret key"
 db = SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch=True)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
+class LoginForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired()])
+    password_hash = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user:
+            if check_password_hash(user.password_hash, form.password_hash.data):
+                login_user(user)
+                flash("Login Successful")
+                return redirect(url_for('dashboard'))                
+            else:
+                flash("Incorrect Password")
+        else:
+            flash("S-User Does Nor Exist")
+
+    return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    flash("You are Logged Out")
+    return redirect(url_for('login'))
+
+@app.route('/dashboard', methods=['GET', 'POST'])
+@login_required
+def dashboard():
+    
+    return render_template('dashboard.html')
+
 class Recipes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(256))
@@ -33,6 +77,7 @@ class RecipeForm(FlaskForm):
     submit = SubmitField("Submit")
 
 @app.route('/recipes/delete/<int:id>')
+@login_required
 def recipe_delete(id):
     recipe_deleted = Recipes.query.get_or_404(id)
 
@@ -58,6 +103,7 @@ def recipe_page(id):
     return render_template('recipe_page.html', recipe=recipe)
 
 @app.route('/recipes/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def recipe_edit(id):
     recipe = Recipes.query.get_or_404(id)
     form = RecipeForm()
@@ -81,6 +127,7 @@ def recipe_edit(id):
     return render_template('recipe_edit.html', form=form)    
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
+@login_required
 def add_recipe():
     form = RecipeForm()
     if form.validate_on_submit():
@@ -129,6 +176,7 @@ class Users(db.Model, UserMixin):
         return '<Name %r>' % self.name
     
 @app.route('/delete/<int:id>')
+@login_required
 def delete(id):
     user_deleted = Users.query.get_or_404(id)    
     form = UserForm()
@@ -153,6 +201,7 @@ class UserForm(FlaskForm):
     submit = SubmitField("Submit")
 
 @app.route('/update/<int:id>', methods=["GET", "POST"])
+@login_required
 def update(id):
     form = UserForm()
     name_updated = Users.query.get_or_404(id)

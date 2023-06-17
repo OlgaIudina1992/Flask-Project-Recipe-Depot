@@ -5,10 +5,16 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-link" href="{{url_for('recipes')}}">Recipes</a>
-          <a class="nav-link" href="{{url_for('add_user')}}">Add User</a>
-          <a class="nav-link" href="{{url_for('add_recipe')}}">Add Recipe</a>         
+        <div class="navbar-nav">                  
+          {% if current_user.is_authenticated %}
+            <a class="nav-link" href="{{url_for('add_recipe')}}">Add Recipe</a> 
+            <a class="nav-link" href="{{url_for('dashboard')}}">Dashboard</a>
+            <a class="nav-link" href="{{url_for('logout')}}">Log Out</a>
+          {% else %}
+            <a class="nav-link" href="{{url_for('login')}}">Log In</a>
+            <a class="nav-link" href="{{url_for('add_user')}}">Add User</a>            
+          {% endif %}              
+          <a class="nav-link" href="{{url_for('recipes')}}">Recipes</a>    
           <a class="nav-link" href="{{ url_for('name')  }}">Converter</a>
           
         </div>

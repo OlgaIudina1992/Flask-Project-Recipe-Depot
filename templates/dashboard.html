@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+<center>
+    <h1>You are logged in</h1>
+    <img src="{{url_for('static', filename='images/floral.png')}}">
+    <br />
+    <div class="col-10">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+      <div class="card">
+        <div class="card-header">
+          {{current_user.email}}
+        </div>
+        <div class="card-body">
+          <h5 >User Information</h5>
+          <p class="card-text">
+      <strong>Name: </strong>
+      {{current_user.name}}
+      <br />
+      <strong>User Id: </strong>
+      {{current_user.id}}
+      <br />
+      <strong>Email: </strong>
+      {{current_user.email}}
+      <br />
+      <strong>Favorite Dish: </strong>
+      {{current_user.favorite_dish}}
+      <br />
+      <strong>Date Joined: </strong>
+      {{current_user.date_added}}
+      <br />
+      </p>
+      <a href="{{url_for('update', id=current_user.id)}}" class="btn btn-primary">Update</a>
+      
+      <a href="{{url_for('delete', id=current_user.id)}}" class="btn btn-danger">Delete</a>
+    </div>
+  </div>
+    </div>
+  </div>
+    
+</center>
+{% endblock %}

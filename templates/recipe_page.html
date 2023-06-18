@@ -18,16 +18,19 @@
 <div class="shadow p-3 mb-5 bg-body rounded">
     <h3>{{recipe.title }}</h3> (<i>{{recipe.slug }}</i>)
     <br />
-    <strong> {{recipe.author }} | {{recipe.date_posted }}</strong>
+    <strong> {{recipe.poster.name }} | {{recipe.date_posted }}</strong>
     <br />
     <br />
-    {{recipe.ingredients }}<br />
+    {{recipe.ingredients|safe }}<br />
     <br />
-    {{recipe.recipe }}<br />
+    {{recipe.recipe|safe }}<br />
     <br />
     <a href="javascript:history.back()" class="btn btn-warning">Back</a>
+    {% if recipe.poster_id == current_user.id %}
     <a href="{{url_for('recipe_edit', id=recipe.id)}}" class="btn btn-outline-warning">Edit</a>
     <a href="{{url_for('recipe_delete', id=recipe.id)}}" class="btn btn-danger">Delete</a>
+    {% endif %}
+ 
 
 </div>
 

@@ -18,9 +18,6 @@
         {{form.hidden_tag()}}
         {{form.title.label(class="form-label")}}
         {{form.title(class="form-control")}}
-
-        {{form.author.label(class="form-label")}}
-        {{form.author(class="form-control")}}
       
         {{form.ingredients.label(class="form-label")}}
         {{form.ingredients(class="form-control")}}
@@ -34,6 +31,9 @@
         
         {{form.submit(class="btn btn-warning")}}
     </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='ingredients') }}
+    {{ ckeditor.config(name='recipe') }}
     </div>
     </div>
   

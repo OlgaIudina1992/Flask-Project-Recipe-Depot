@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<center>
+{% if recipes %}
+    <h1>Search results for "{{searchbar|lower}}":</h1>
+<img src="{{url_for('static', filename='images/cooking_rooster.png')}}">
+
+    <div class="col-10">
+<div class="shadow p-3 mb-5 bg-body rounded">
+<br />
+{% for recipe in recipes %}
+<h2><a href="{{url_for('recipe_page', id=recipe.id)}}">{{recipe.title}}</a></h2><br />
+<p>{{recipe.recipe|truncate(50)|safe}}</p>
+{% endfor %}
+<br />
+</div>
+</div>
+{% else %}
+<h2>Sorry, your search returned no results!</h2>
+{% endif %}
+</center>
+{% endblock %}

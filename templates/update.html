@@ -9,6 +9,7 @@
   </div>
 {% endfor %}
 
+{% if id == current_user.id %}
 <center>
     <h1>Update User: </h1>
     <img src="{{url_for('static', filename='images/floral.png')}}">
@@ -29,7 +30,12 @@
     </form>
     </div>
     </div>
-  
+{% else %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+    You cannot edit this profile!
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
     
     
 </center>

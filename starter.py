@@ -1,13 +1,10 @@
 from flask import Flask, redirect, render_template, flash, request, url_for
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DecimalField, PasswordField, BooleanField, ValidationError
-from wtforms.validators import DataRequired, EqualTo, Length
-from wtforms.widgets import TextArea
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager,  login_required, logout_user, current_user
+from webforms import LoginForm, RecipeForm, UserForm, NameForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -23,12 +20,7 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
-
-class LoginForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired()])
-    password_hash = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
+#Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -46,6 +38,7 @@ def login():
 
     return render_template('login.html', form=form)
 
+#Logout Route
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
@@ -53,29 +46,14 @@ def logout():
     flash("You are Logged Out")
     return redirect(url_for('login'))
 
+#Dashboard route
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     
     return render_template('dashboard.html')
 
-class Recipes(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(256))
-    ingredients = db.Column(db.Text)
-    recipe = db.Column(db.Text)
-    author = db.Column(db.String(256))
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
-    slug = db.Column(db.String(256))
-
-class RecipeForm(FlaskForm):
-    title = StringField("Title", validators=[DataRequired()])
-    ingredients = StringField("List of Ingredients", validators=[DataRequired()], widget=TextArea())
-    recipe = StringField("Recipe", validators=[DataRequired()], widget=TextArea())
-    author = StringField("Contributor", validators=[DataRequired()])
-    slug = StringField("Slugified URL", validators=[DataRequired()])
-    submit = SubmitField("Submit")
-
+#Delete recipe route
 @app.route('/recipes/delete/<int:id>')
 @login_required
 def recipe_delete(id):
@@ -92,16 +70,19 @@ def recipe_delete(id):
         recipes = Recipes.query.order_by(Recipes.date_posted)
         return render_template('recipes.html', recipes=recipes)
 
+#Recipe collection route
 @app.route('/recipes')
 def recipes():
     recipes = Recipes.query.order_by(Recipes.date_posted)
     return render_template('recipes.html', recipes=recipes)
 
+#Individual recipe route
 @app.route('/recipes/<int:id>')
 def recipe_page(id):
     recipe = Recipes.query.get_or_404(id)
     return render_template('recipe_page.html', recipe=recipe)
 
+#Edit recipe route
 @app.route('/recipes/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def recipe_edit(id):
@@ -126,6 +107,7 @@ def recipe_edit(id):
 
     return render_template('recipe_edit.html', form=form)    
 
+#Add recipe route
 @app.route('/add_recipe', methods=['GET', 'POST'])
 @login_required
 def add_recipe():
@@ -149,6 +131,107 @@ def add_recipe():
 
     return render_template('add_recipe.html', form=form)   
 
+#Delete user route
+@app.route('/delete/<int:id>')
+@login_required
+def delete(id):
+    user_deleted = Users.query.get_or_404(id)    
+    form = UserForm()
+    name = None
+    try:
+            db.session.delete(user_deleted)
+            db.session.commit()
+            flash("Deleted Successfully!")
+            our_users = Users.query.order_by(Users.date_added)
+            return render_template('add_user.html', form=form, name=name, our_users=our_users)
+    except:
+            flash("Failed to Delete User")
+            return render_template('add_user.html', form=form, name=name, our_users=our_users)
+
+#Update user route
+@app.route('/update/<int:id>', methods=["GET", "POST"])
+@login_required
+def update(id):
+    form = UserForm()
+    name_updated = Users.query.get_or_404(id)
+    if request.method == "POST":
+        name_updated.name = request.form['name']
+        name_updated.favorite_dish = request.form['favorite_dish']
+        name_updated.email = request.form['email']
+        try:
+            db.session.commit()
+            flash("Updated Successfully!")
+            return render_template('update.html', name_updated=name_updated, form=form)
+        except:
+            flash("Failed to Update User")
+            return render_template('update.html', name_updated=name_updated, form=form)
+    else:
+        return render_template('update.html', name_updated=name_updated, form=form)
+
+#Add user route
+@app.route('/user/add', methods=['GET', 'POST'])
+def add_user():
+    form = UserForm()
+    name = None
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None:
+            hashed_pass = generate_password_hash(form.password_hash.data, "sha256")
+            user = Users(name = form.name.data, email=form.email.data, favorite_dish=form.favorite_dish.data, password_hash=hashed_pass)
+            db.session.add(user)
+            db.session.commit()          
+        name = form.name.data
+       
+        form.name.data = '' 
+        form.email.data = '' 
+        form.favorite_dish.data =''
+        form.password_hash.data =''
+        flash("User Added")
+    our_users = Users.query.order_by(Users.date_added)
+    return render_template('add_user.html', form=form, name=name, our_users=our_users)
+
+#Home route
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+#Name and errors
+@app.route('/user/<name>')
+def user(name):
+    return render_template('user.html', user_name=name)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('500.html'), 500
+
+#Converter route
+@app.route('/name', methods=['GET', 'POST'])
+def name():
+    name = None   
+    c_to_f = None
+    form = NameForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        form.name.data = ''    
+        c_to_f = (form.c_to_f.data * 9/5) + 32
+        form.c_to_f.data = ''      
+        flash("Form Submitted!")
+
+    return render_template('name.html', name=name, c_to_f = c_to_f, form=form)
+
+#Models
+class Recipes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(256))
+    ingredients = db.Column(db.Text)
+    recipe = db.Column(db.Text)
+    author = db.Column(db.String(256))
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    slug = db.Column(db.String(256))
 
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -175,102 +258,3 @@ class Users(db.Model, UserMixin):
     def __repr__(self):
         return '<Name %r>' % self.name
     
-@app.route('/delete/<int:id>')
-@login_required
-def delete(id):
-    user_deleted = Users.query.get_or_404(id)    
-    form = UserForm()
-    name = None
-    try:
-            db.session.delete(user_deleted)
-            db.session.commit()
-            flash("Deleted Successfully!")
-            our_users = Users.query.order_by(Users.date_added)
-            return render_template('add_user.html', form=form, name=name, our_users=our_users)
-    except:
-            flash("Failed to Delete User")
-            return render_template('add_user.html', form=form, name=name, our_users=our_users)
-
-class UserForm(FlaskForm):
-    name = StringField("Name: ", validators=[DataRequired()])
-    
-    favorite_dish = StringField("Fave Dish: ")    
-    email = StringField("Email: ", validators=[DataRequired()])
-    password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash', message='Passwords Must Match')])
-    password_hash2 = PasswordField('Confirm Password', validators=[DataRequired()])
-    submit = SubmitField("Submit")
-
-@app.route('/update/<int:id>', methods=["GET", "POST"])
-@login_required
-def update(id):
-    form = UserForm()
-    name_updated = Users.query.get_or_404(id)
-    if request.method == "POST":
-        name_updated.name = request.form['name']
-        name_updated.favorite_dish = request.form['favorite_dish']
-        name_updated.email = request.form['email']
-        try:
-            db.session.commit()
-            flash("Updated Successfully!")
-            return render_template('update.html', name_updated=name_updated, form=form)
-        except:
-            flash("Failed to Update User")
-            return render_template('update.html', name_updated=name_updated, form=form)
-    else:
-        return render_template('update.html', name_updated=name_updated, form=form)
-
-class NameForm(FlaskForm):
-    name = StringField("Username: ")
-    c_to_f = DecimalField("Converter: ", places=2)
-    submit = SubmitField("Submit")
-
-@app.route('/user/add', methods=['GET', 'POST'])
-def add_user():
-    form = UserForm()
-    name = None
-    if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
-        if user is None:
-            hashed_pass = generate_password_hash(form.password_hash.data, "sha256")
-            user = Users(name = form.name.data, email=form.email.data, favorite_dish=form.favorite_dish.data, password_hash=hashed_pass)
-            db.session.add(user)
-            db.session.commit()          
-        name = form.name.data
-       
-        form.name.data = '' 
-        form.email.data = '' 
-        form.favorite_dish.data =''
-        form.password_hash.data =''
-        flash("User Added")
-    our_users = Users.query.order_by(Users.date_added)
-    return render_template('add_user.html', form=form, name=name, our_users=our_users)
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/user/<name>')
-def user(name):
-    return render_template('user.html', user_name=name)
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def page_not_found(e):
-    return render_template('500.html'), 500
-
-@app.route('/name', methods=['GET', 'POST'])
-def name():
-    name = None   
-    c_to_f = None
-    form = NameForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        form.name.data = ''    
-        c_to_f = (form.c_to_f.data * 9/5) + 32
-        form.c_to_f.data = ''      
-        flash("Form Submitted!")
-
-    return render_template('name.html', name=name, c_to_f = c_to_f, form=form)

@@ -203,18 +203,22 @@ def update(id):
 @app.route('/delete/<int:id>')
 @login_required
 def delete(id):
-    user_deleted = Users.query.get_or_404(id)    
-    form = UserForm()
-    name = None
-    try:
-            db.session.delete(user_deleted)
-            db.session.commit()
-            flash("Deleted Successfully!")
-            our_users = Users.query.order_by(Users.date_added)
-            return render_template('add_user.html', form=form, name=name, our_users=our_users)
-    except:
-            flash("Failed to Delete User")
-            return render_template('add_user.html', form=form, name=name, our_users=our_users)
+    if id == current_user.id:
+        user_deleted = Users.query.get_or_404(id)    
+        form = UserForm()
+        name = None
+        try:
+                db.session.delete(user_deleted)
+                db.session.commit()
+                flash("Deleted Successfully!")
+                our_users = Users.query.order_by(Users.date_added)
+                return render_template('add_user.html', form=form, name=name, our_users=our_users)
+        except:
+                flash("Failed to Delete User")
+                return render_template('add_user.html', form=form, name=name, our_users=our_users)
+    else:
+        flash("Failed to Delete User")
+        return redirect(url_for('dashboard'))
 
 ##Various
 

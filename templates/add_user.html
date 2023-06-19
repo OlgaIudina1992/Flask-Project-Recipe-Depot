@@ -37,34 +37,5 @@
     </div>
   </div>
    
-    <h1>User List: </h1>
-    <br />
-    <table class="table table-hover">
-        <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name</th>
-              <th scope="col">Email</th>
-              <th scope="col">Favorite Dish</th>
-              <th scope="col">Options</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for our_user in our_users %}
-            <tr>
-                              
-              <th scope="row">{{our_user.id}}.</th>
-              <td>{{our_user.name}}</td>
-              <td>{{our_user.email}}</td>
-              <td>{{our_user.favorite_dish}}</td>
-              <td><a href="{{url_for('update', id=our_user.id)}}">Update</a> | <a href="{{url_for('delete', id=our_user.id)}}">Delete</a></td>
-              </tr>     
-            </tr>
-            {% endfor %}
-    </table>
-    
-    <br />
-
-    
 </center>
 {% endblock %}

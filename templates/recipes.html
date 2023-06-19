@@ -19,7 +19,11 @@
 <div class="shadow p-3 mb-5 bg-body rounded">
     <h3>{{recipe.title }}</h3> (<i>{{recipe.slug }}</i>)
     <br />
+    {% if recipe.poster.name %}
     <strong> {{recipe.poster.name }} | {{recipe.date_posted }}</strong>
+    {%else%}
+    <strong> =_= | {{recipe.date_posted }}</strong>
+    {%endif%}
     <br />
     <br />
     {{recipe.ingredients|truncate(50)|safe }}<br />
@@ -31,6 +35,7 @@
     <a href="{{url_for('recipe_edit', id=recipe.id)}}" class="btn btn-outline-warning">Edit</a>
     <a href="{{url_for('recipe_delete', id=recipe.id)}}" class="btn btn-danger">Delete</a>
     {% endif %}
+    
 
 </div>
 {% endfor %}

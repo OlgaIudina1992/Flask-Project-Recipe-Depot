@@ -284,7 +284,7 @@ class Recipes(db.Model):
     author = db.Column(db.String(256))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     slug = db.Column(db.String(256))
-    poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    poster_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="CASCADE"))
 
     
 
@@ -295,7 +295,7 @@ class Users(db.Model, UserMixin):
     favorite_dish = db.Column(db.String(200))
     email = db.Column(db.String(100), nullable=False, unique=True)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    recipes = db.relationship('Recipes', backref='poster')
+    recipes = db.relationship('Recipes', backref='poster', cascade='save-update, merge, delete', passive_deletes=True)
 
     password_hash = db.Column(db.String(150))
 
